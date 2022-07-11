@@ -5,12 +5,13 @@ function TodoCard({ todo }) {
   const dispatch = useDispatch();
 
   return (
-    <li key={todo.id} className={todo.isCompleted ? 'completed' : ''}>
+    <li key={todo.id} className={todo.completed ? 'completed' : ''}>
       <div className='view'>
         <input
           className='toggle'
           type='checkbox'
-          defaultChecked={todo.isCompleted ? true : false}
+          readOnly
+          checked={todo.completed}
           onClick={() => dispatch(SetStatus({ id: todo.id }))}
         />
         <label>{todo.title}</label>

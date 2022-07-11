@@ -1,10 +1,12 @@
 import { useSelector } from 'react-redux';
+import { selectTodos } from '../../redux/todos/todosSlice';
 import TodoContent from './TodoContent';
 import TodoFooter from './TodoFooter';
 import TodoForm from './TodoForm';
 
 function Content() {
-  const todos = useSelector((state) => state.todos.todos);
+  const todos = useSelector(selectTodos);
+
   return (
     <>
       <TodoForm />

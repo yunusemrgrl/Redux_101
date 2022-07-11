@@ -12,7 +12,7 @@ function TodoFooter() {
 
   const activeFilter = useSelector((state) => state.todos.ActiveClass);
 
-  const ItemLeft = todos.filter((todo) => !todo.isCompleted);
+  const ItemLeft = todos.filter((todo) => !todo.completed);
 
   const dispatch = useDispatch();
 
