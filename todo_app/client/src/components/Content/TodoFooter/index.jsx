@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -13,6 +13,10 @@ function TodoFooter() {
   const activeFilter = useSelector((state) => state.todos.ActiveClass);
 
   const ItemLeft = todos.filter((todo) => !todo.completed);
+
+  useEffect(() => {
+    localStorage.setItem('active-class', activeFilter);
+  }, [activeFilter]);
 
   const dispatch = useDispatch();
 

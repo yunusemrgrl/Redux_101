@@ -1,59 +1,31 @@
-import axios from 'axios';
-
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { message } from 'antd';
-
-export const getTodosAsyc = createAsyncThunk(
-  'todos/getTodosAsync',
-  async () => {
-    const res = await axios('http://localhost:7000/todos');
-    return res.data;
-  },
-);
+import {
+  addTodosAsyc,
+  deleteTodosAsyc,
+  getTodosAsyc,
+  toggleTodosAsyc,
+  setCompletedTodosAsyc,
+} from './services';
 
 export const todosSlice = createSlice({
   name: 'todos',
   initialState: {
     todos: [],
-    ActiveClass: 'all',
+    ActiveClass: localStorage.getItem('active-class'),
   },
 
   reducers: {
-    AddTodo: {
-      reducer: (state, action) => {
-        state.todos.push(action.payload);
-      },
-      prepare: ({ title }) => {
-        return {
-          payload: {
-            id: new Date().getTime(),
-            title,
-            completed: false,
-          },
-        };
-      },
-    },
-    SetStatus: (state, action) => {
-      const { id } = action.payload;
-      const item = state.todos.find((item) => item.id === id);
-      item.completed = !item.completed;
-    },
-    SetAllCompleted: (state, action) => {
-      const status = state.todos.every((todo) => todo.completed === true);
-      if (!status) {
-        state.todos.every((todo) => (todo.completed = true));
-      }
-      console.log(status);
-      if (status) {
-        state.todos.filter((todo) => (todo.completed = !todo.completed));
-      }
-    },
-    DeleteTodo: (state, action) => {
-      const { id } = action.payload;
-      const filtered = state.todos.filter((todo) => todo.id !== id);
-      state.todos = filtered;
-      message.info('Silindi.. 🤞');
-    },
+    // SetAllCompleted: (state, action) => {
+    //   console.log('checked completed:', action.payload);
+    //   const status = state.todos.every((todo) => todo.completed === true);
+    //   if (!status) {
+    //     state.todos.every((todo) => (todo.completed = true));
+    //   }
+    //   if (status) {
+    //     state.todos.filter((todo) => (todo.completed = !todo.completed));
+    //   }
+    // },
     SetActiveClass: (state, action) => {
       state.ActiveClass = action.payload;
     },
@@ -65,6 +37,7 @@ export const todosSlice = createSlice({
       state.todos = filtered;
     },
   },
+  // get todos
   extraReducers: {
     [getTodosAsyc.pending]: (state, action) => {
       message.loading({
@@ -75,7 +48,7 @@ export const todosSlice = createSlice({
     [getTodosAsyc.fulfilled]: (state, action) => {
       state.todos = action.payload;
       message.success({
-        content: 'OK ✔',
+        content: 'Ok...',
         key: 'todos_fetching',
       });
     },
@@ -84,6 +57,51 @@ export const todosSlice = createSlice({
         content: action.error.message,
         key: 'todos_fetching',
       });
+    },
+    // add todos
+    [addTodosAsyc.pending]: (state, action) => {
+      message.loading({
+        content: 'Pending.. ',
+        key: 'todos_post',
+      });
+    },
+    [addTodosAsyc.fulfilled]: (state, action) => {
+      state.todos.unshift(action.payload);
+      message.success({
+        content: 'Eklendi.. ✔',
+        key: 'todos_post',
+      });
+    },
+    [addTodosAsyc.rejected]: (state, action) => {
+      message.warning({
+        content: action.error.message,
+        key: 'todos_post',
+      });
+    },
+    // toggle todo
+    [toggleTodosAsyc.fulfilled]: (state, action) => {
+      const { id, completed } = action.payload;
+      const index = state.todos.findIndex((item) => item.id === id);
+      state.todos[index].completed = completed;
+    },
+    // completed todos
+    [setCompletedTodosAsyc.fulfilled]: (state, action) => {
+      console.log(action.payload);
+      const { id, completed } = action.payload;
+      const index = state.todos.findIndex((item) => item.id === id);
+
+      const status = state.todos.every((todo) => todo.completed === false);
+      console.log(status);
+      state.todos[index].completed = !completed;
+      if (!status) {
+        state.todos[index].completed = true;
+      }
+    },
+    // delete todo
+    [deleteTodosAsyc.fulfilled]: (state, action) => {
+      const id = action.payload;
+      const filtered = state.todos.filter((item) => item.id !== id);
+      state.todos = filtered;
     },
   },
 });
@@ -101,12 +119,6 @@ export const selectFilteredTodos = (state) => {
   );
 };
 
-export const {
-  AddTodo,
-  SetStatus,
-  DeleteTodo,
-  SetActiveClass,
-  ClearCompleted,
-  SetAllCompleted,
-} = todosSlice.actions;
+export const { SetActiveClass, ClearCompleted, SetAllCompleted } =
+  todosSlice.actions;
 export default todosSlice.reducer;

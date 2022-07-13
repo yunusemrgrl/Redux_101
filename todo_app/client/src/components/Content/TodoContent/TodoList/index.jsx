@@ -1,10 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  getTodosAsyc,
-  selectFilteredTodos,
-} from '../../../../redux/todos/todosSlice';
-
+import { getTodosAsyc } from '../../../../redux/todos/services';
+import { selectFilteredTodos } from '../../../../redux/todos/todosSlice';
 import TodoCard from '../TodoCard';
 function TodoList() {
   const dispatch = useDispatch();

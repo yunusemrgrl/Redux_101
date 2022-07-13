@@ -1,21 +1,33 @@
 import { message } from 'antd';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AddTodo, selectTodos } from '../../../redux/todos/todosSlice';
+import { addTodosAsyc } from '../../../redux/todos/services';
+import { selectTodos } from '../../../redux/todos/todosSlice';
 
 function TodoForm() {
   const [todo, setTodo] = useState('');
+  const [pending, SetPending] = useState(false);
   const dispatch = useDispatch();
   const todos = useSelector(selectTodos);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (todo.trim() === '') return;
-    dispatch(AddTodo({ title: todo }));
-    setTodo('');
-    message.success({
-      content: 'Başarılı 😎',
-    });
+    try {
+      SetPending(true);
+      if (todo.trim() === '') {
+        return message.warning({
+          content: 'Boş hayallerin peşinde koşma 🤬',
+        });
+      } else {
+        await dispatch(addTodosAsyc({ title: todo }));
+        setTodo('');
+      }
+    } catch (e) {
+      alert(e);
+      return;
+    } finally {
+      SetPending(false);
+    }
   };
 
   return (
@@ -24,11 +36,14 @@ function TodoForm() {
         value={todo}
         className='new-todo'
         placeholder={
-          todos.length !== 0
-            ? 'What needs to be done'
-            : "Başlamak bitirmenin %25'i filandır.."
+          !pending
+            ? todos.length === 0
+              ? "Başlamak bitirmenin %50'si filandır.."
+              : 'Başladın diye yolun yarısı bitti mi ?'
+            : 'Pending..'
         }
         autoFocus
+        disabled={pending}
         onChange={(e) => setTodo(e.target.value)}
       />
     </form>

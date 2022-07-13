@@ -4,37 +4,39 @@ const colors = require('colors');
 const cors = require('cors');
 const { json } = require('body-parser');
 const { nanoid } = require('nanoid');
+const bodyParser = require('body-parser');
 
 dotenv.config({ path: './config.env' });
 
 const app = express();
 
 app.use(cors());
-app.use(json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 let todos = [
   {
-    id: nanoid(),
+    id: 1,
     title: 'todo 1',
     completed: true,
   },
   {
-    id: nanoid(),
+    id: 2,
     title: 'todo 2',
     completed: false,
   },
   {
-    id: nanoid(),
+    id: 3,
     title: 'todo 3',
     completed: false,
   },
   {
-    id: nanoid(),
+    id: 4,
     title: 'todo 4',
     completed: false,
   },
   {
-    id: nanoid(),
+    id: 5,
     title: 'todo 5',
     completed: false,
   },
@@ -42,9 +44,28 @@ let todos = [
 
 app.get('/todos', (req, res) => res.send(todos));
 
+app.get('/todos/:id', (req, res) => {
+  console.log(req.params.id);
+  if (isNaN(req.params.id)) {
+    res.send(400, {
+      message: 'İşlenemeyen veri',
+    });
+  } else {
+    const todo = todos.find((item) => item.id == req.params.id);
+    console.log(todo);
+    if (todo) {
+      res.send(todo);
+    } else {
+      res.send(400, {
+        message: 'kullanıcı bulunamadı',
+      });
+    }
+  }
+});
+
 app.post('/todos', (req, res) => {
   const todo = { title: req.body.title, id: nanoid(), completed: false };
-  todos.push(todo);
+  todos.unshift(todo);
   return res.send(todo);
 });
 
@@ -64,7 +85,6 @@ app.delete('/todos/:id', (req, res) => {
   if (index > -1) {
     todos.splice(index, 1);
   }
-
   res.send(todos);
 });
 
