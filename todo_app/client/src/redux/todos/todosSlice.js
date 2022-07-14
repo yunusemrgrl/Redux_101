@@ -20,13 +20,6 @@ export const todosSlice = createSlice({
     SetActiveClass: (state, action) => {
       state.ActiveClass = action.payload;
     },
-    ClearCompleted: (state, action) => {
-      const filtered = state.todos.filter((todo) => !todo.completed);
-      if (filtered.length < state.todos.length) {
-        message.info('Güzel gidiyosun.. 🤞');
-      }
-      state.todos = filtered;
-    },
   },
   // get todos
   extraReducers: {
