@@ -1,11 +1,9 @@
+import { message } from 'antd';
 import React, { useEffect } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  SetActiveClass,
-  ClearCompleted,
-  selectTodos,
-} from '../../../redux/todos/todosSlice';
+import { clearCompeletedTodosAsyc } from '../../../redux/todos/services';
+import { SetActiveClass, selectTodos } from '../../../redux/todos/todosSlice';
 
 function TodoFooter() {
   const todos = useSelector(selectTodos);
@@ -59,7 +57,15 @@ function TodoFooter() {
       {activeFilter !== 'active' && (
         <button
           className='clear-completed'
-          onClick={() => dispatch(ClearCompleted())}
+          onClick={() => {
+            const filtered = todos.filter((todo) => todo.completed);
+            filtered.forEach((todo) =>
+              dispatch(clearCompeletedTodosAsyc(todo.id)),
+            );
+            if (filtered.length >= todos.length / 2) {
+              message.info('Güzel gidiyosun.. 🤞', 1.5);
+            }
+          }}
         >
           Clear completed
         </button>

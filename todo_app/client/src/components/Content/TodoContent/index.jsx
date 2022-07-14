@@ -19,7 +19,13 @@ function TodoContent({ todos }) {
             htmlFor='toggle-all'
             onClick={() =>
               todos.forEach((todo) => {
-                handleToggle(todo.id, todo.completed);
+                const status = todos.every((todo) => todo.completed === true);
+                if (status) {
+                  handleToggle(todo.id, !todo.completed);
+                }
+                if (!status) {
+                  handleToggle(todo.id, true);
+                }
               })
             }
           >

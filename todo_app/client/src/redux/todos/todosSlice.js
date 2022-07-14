@@ -6,6 +6,7 @@ import {
   getTodosAsyc,
   toggleTodosAsyc,
   setCompletedTodosAsyc,
+  clearCompeletedTodosAsyc,
 } from './services';
 
 export const todosSlice = createSlice({
@@ -16,16 +17,6 @@ export const todosSlice = createSlice({
   },
 
   reducers: {
-    // SetAllCompleted: (state, action) => {
-    //   console.log('checked completed:', action.payload);
-    //   const status = state.todos.every((todo) => todo.completed === true);
-    //   if (!status) {
-    //     state.todos.every((todo) => (todo.completed = true));
-    //   }
-    //   if (status) {
-    //     state.todos.filter((todo) => (todo.completed = !todo.completed));
-    //   }
-    // },
     SetActiveClass: (state, action) => {
       state.ActiveClass = action.payload;
     },
@@ -86,21 +77,20 @@ export const todosSlice = createSlice({
     },
     // completed todos
     [setCompletedTodosAsyc.fulfilled]: (state, action) => {
-      console.log(action.payload);
+      // console.log(action.payload);
       const { id, completed } = action.payload;
       const index = state.todos.findIndex((item) => item.id === id);
-
-      const status = state.todos.every((todo) => todo.completed === false);
-      console.log(status);
-      state.todos[index].completed = !completed;
-      if (!status) {
-        state.todos[index].completed = true;
-      }
+      state.todos[index].completed = completed;
     },
     // delete todo
     [deleteTodosAsyc.fulfilled]: (state, action) => {
       const id = action.payload;
       const filtered = state.todos.filter((item) => item.id !== id);
+      state.todos = filtered;
+    },
+    // clear completed todos
+    [clearCompeletedTodosAsyc.fulfilled]: (state, action) => {
+      const filtered = action.payload;
       state.todos = filtered;
     },
   },

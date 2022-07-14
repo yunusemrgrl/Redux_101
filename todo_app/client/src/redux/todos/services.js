@@ -50,3 +50,12 @@ export const deleteTodosAsyc = createAsyncThunk(
     return id;
   },
 );
+export const clearCompeletedTodosAsyc = createAsyncThunk(
+  'todos/deleteTodosAsync',
+  async (id) => {
+    const res = await axios.delete(
+      `${process.env.REACT_APP_BASE_END_POINT}/todos/${id}`,
+    );
+    return res.data;
+  },
+);
